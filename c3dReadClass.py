@@ -11,6 +11,8 @@ import tkinter
 from tkinter import messagebox
 
 
+errorCount = 0
+
 class C3DData ():
 	"""
 	Parameters:
@@ -142,9 +144,16 @@ class C3DData ():
 	def GetPointData(self, Name):
 		data = self.c3d['data']['points']
 		dicts = {}
-		for k in range(0, data.shape[1]):
-			ListStr = self.Labels[Name][k]   
-			dicts[ListStr]=data[0:4, k]
+		# hack to load data
+		# TODO: check why not loading, also, always fails when k = 255, hence the limit below
+		lower = min(data.shape[1], 255)
+		for k in range(0, lower):
+			try:
+				ListStr = self.Labels[Name][k]   
+				dicts[ListStr]=data[0:4, k]
+			except:
+				print("error: " + Name + " " + str(k) + " " + str(data.shape) )
+				errorCount+=1
 		return dicts
 	
 	def GetLabels(self, Names):
@@ -167,7 +176,7 @@ class C3DData ():
 
 
 if __name__ == "__main__":
-	abc = C3DData (None, './data/02_03.c3d')
+	abc = C3DData (None, './data/allc3d/subjects/09/09_01.c3d')
 	print(abc)
 
 
